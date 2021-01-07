@@ -6,19 +6,19 @@
         <img src="../assets/logo.png" alt="" />
       </div>
       <!-- 登录表单区域 -->
-      <el-form :model='loginForm' label-width="0px" class="form">
+      <el-form ref="loginFormRef" :model='loginForm' :rules="loginFormRules"  label-width="0px" class="form">
         <!-- 用户名 -->
-        <el-form-item >
+        <el-form-item prop="username">
           <el-input v-model="loginForm.username" prefix-icon="el-icon-user-solid"></el-input>
         </el-form-item>
         <!-- 密码 -->
-        <el-form-item>
+        <el-form-item prop="password">
           <el-input type='password'  v-model="loginForm.password"  prefix-icon="el-icon-lock"></el-input>
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item class="btn">
-          <el-button type="primary">登录</el-button>
-          <el-button type="info">重置</el-button>
+          <el-button type="primary" @click="login">登录</el-button>
+          <el-button type="info" @click="resetForm">重置</el-button>
         </el-form-item>
       </el-form>
     </div>
@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import {getLoginInfo} from '@/network/login.js'
 export default {
   name: "login",
   data(){
@@ -33,7 +34,31 @@ export default {
       loginForm:{
         username:'',
         password:''
-      }
+      },
+      loginFormRules:{
+        username:[ { required: true, message: '请输入登录名称', trigger: 'blur' },
+                   { min: 3, max: 10, message: '长度在 3 到 10 个字符', trigger: 'blur' }],
+        password:[{ required: true, message: '请输入登录名称', trigger: 'blur' },
+                  { min: 6, max: 15, message: '长度在 6 到 15 个字符', trigger: 'blur' }]
+      },
+    }
+  },
+  methods:{
+    resetForm(){
+      this.$refs.loginFormRef.resetFields()
+    },
+    login(){
+      this.$refs.loginFormRef.validate((valid)=>{
+        if(!valid) return;
+        else 
+          getLoginInfo(this.loginForm.username,this.loginForm.password).then(res=>{
+            console.log(res);
+            if(res.meta.status!==200)
+             return console.log('登录失败');
+            console.log('登录成功');
+          })
+        
+      })
     }
   }
 };
