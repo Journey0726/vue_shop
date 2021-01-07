@@ -6,14 +6,14 @@
         <img src="../assets/logo.png" alt="" />
       </div>
       <!-- 登录表单区域 -->
-      <el-form label-width="0px" class="form">
+      <el-form :model='loginForm' label-width="0px" class="form">
         <!-- 用户名 -->
-        <el-form-item>
-          <el-input prefix-icon="el-icon-user-solid"></el-input>
+        <el-form-item >
+          <el-input v-model="loginForm.username" prefix-icon="el-icon-user-solid"></el-input>
         </el-form-item>
         <!-- 密码 -->
         <el-form-item>
-          <el-input prefix-icon="el-icon-lock"></el-input>
+          <el-input type='password'  v-model="loginForm.password"  prefix-icon="el-icon-lock"></el-input>
         </el-form-item>
         <!-- 按钮 -->
         <el-form-item class="btn">
@@ -28,6 +28,14 @@
 <script>
 export default {
   name: "login",
+  data(){
+    return {
+      loginForm:{
+        username:'',
+        password:''
+      }
+    }
+  }
 };
 </script>
 
