@@ -32,8 +32,8 @@ export default {
   data(){
     return {
       loginForm:{
-        username:'',
-        password:''
+        username:'admin',
+        password:'123456'
       },
       loginFormRules:{
         username:[ { required: true, message: '请输入登录名称', trigger: 'blur' },
@@ -54,8 +54,10 @@ export default {
           getLoginInfo(this.loginForm.username,this.loginForm.password).then(res=>{
             console.log(res);
             if(res.meta.status!==200)
-             return console.log('登录失败');
-            console.log('登录成功');
+             return this.$message.error('登录失败');
+            this.$message.success('登录成功');
+            window.sessionStorage.setItem('token',res.data.token)
+            this.$router.push('/home')
           })
         
       })
