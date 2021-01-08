@@ -11,30 +11,38 @@
     <!-- 主体 -->
     <el-container>
       <!-- 侧边栏 -->
-      <el-aside width="200px">
+      <el-aside :width="isShow ? '64px':'200px'">
+          <div class="toggle_botton" @click="toogle">|||</div>
         <el-menu
+         unique-opened
           background-color="#333744"
           text-color="#fff"
-          active-text-color="#ffd04b"
+          active-text-color="#409eff"
+          :collapse='isShow'
+          :collapse-transition= 'false'
+          :router="true"
+          :default-active="activePath"
         >
-          <el-submenu index="1">
+          <el-submenu :index="item.id.toString()" v-for="item in  asideInfo" :key="item.id">
             <!-- 一级菜单模板 -->
             <template slot="title">
-              <i class="el-icon-location"></i>
-              <span>导航一</span>
+              <i :class="iconList[item.id]"></i>
+              <span>{{item.authName}}</span>
             </template>
             <!-- 二级菜单 -->
-            <el-menu-item index="1-1">
+            <el-menu-item :index="'/'+item2.path" v-for="item2 in item.children" :key="item2.id" @click="saveNavState('/'+item2.path)">
               <template slot="title">
-                <i class="el-icon-location"></i>
-                <span>导航一</span>
+                <i class="el-icon-menu"></i>
+                <span>{{item2.authName}}</span>
               </template>
             </el-menu-item>
           </el-submenu>
         </el-menu>
       </el-aside>
       <!-- 右侧内容主体 -->
-      <el-main>Main</el-main>
+      <el-main>
+          <router-view></router-view>
+      </el-main>
     </el-container>
   </el-container>
 </template>
@@ -45,11 +53,21 @@ export default {
   name: "home",
   data(){
       return {
-          asideInfo:[]
+          asideInfo:[],
+          iconList:{
+              '125':'el-icon-user-solid',
+              '103':'el-icon-s-cooperation',
+              '101':'el-icon-shopping-bag-1',
+              '102':'el-icon-document',
+              '145':'el-icon-data-line'
+          },
+          isShow:false,
+          activePath:''
       }
   },
   created(){
       this.getHomeAsideInfo1()
+      this.activePath = window.sessionStorage.getItem('path')
   },
   methods: {
     logout() {
@@ -60,8 +78,16 @@ export default {
       getHomeAsideInfo().then(res=>{
           if(res.meta.status !==200) return this.$message.error(res.meta.msg)
           this.asideInfo = res.data
-      })
-  }
+        //   console.log(this.asideInfo);
+                })
+            },
+        toogle(){
+            this.isShow = !this.isShow
+        },
+        saveNavState(path){
+            window.sessionStorage.setItem('path',path)
+            this.activePath = path
+        }
   }
  
 };
@@ -91,6 +117,15 @@ export default {
   margin-right: 15px;
 }
 .el-menu {
-  width: 200px;
+    border-right: none;
+}
+.toggle_botton{
+    background-color: #4a5064;
+    font-size: 10px;
+    line-height: 24px;
+    color: #fff;
+    text-align: center;
+    letter-spacing: 0.2em;
+    cursor: pointer;
 }
 </style>

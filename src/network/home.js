@@ -6,3 +6,12 @@ export function getHomeAsideInfo() {
     url:'/menus',
   });
 }
+export function getUsersInfo(query , pagenum , pagesize) {
+  return request({
+    method:'get',
+    url:'/users',
+    params:{
+      query,pagenum,pagesize
+    }
+  });
+}
