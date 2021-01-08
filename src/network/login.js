@@ -2,9 +2,9 @@ import {request} from './request.js'
 
 export function getLoginInfo(username,password) {
   return request({
-    method:'get',
+    method:'post',
     url:'/login',
-    params:{
+    data:{
         username,
         password
     }
