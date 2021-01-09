@@ -15,3 +15,18 @@ export function getUsersInfo(query , pagenum , pagesize) {
     }
   });
 }
+export function userStateChanged(url) {
+  return request({
+    method:'put',
+    url,
+  });
+}
+export function addUsers(username,password,email,mobile) {
+  return request({
+    method:'post',
+    url:'/users',
+    data:{
+      username,password,email,mobile
+    }
+  });
+}
