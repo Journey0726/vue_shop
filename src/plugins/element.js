@@ -4,7 +4,7 @@ import {Form,FormItem } from 'element-ui'
 import { Input } from 'element-ui'
 import {Message} from "element-ui"
 import {Container,Header,Aside,Main} from "element-ui"
-import {Menu,Submenu,MenuItem,Breadcrumb,BreadcrumbItem,Card,Row,Col,Table,TableColumn} from "element-ui"
+import {Menu,Submenu,MenuItem,Breadcrumb,BreadcrumbItem,Card,Row,Col,Table,TableColumn,Switch,Tooltip,Pagination} from "element-ui"
 
 Vue.use(Button)
 Vue.use(Form)
@@ -24,5 +24,8 @@ Vue.use(Row)
 Vue.use(Col)
 Vue.use(Table)
 Vue.use(TableColumn)
+Vue.use(Switch)
+Vue.use(Tooltip)
+Vue.use(Pagination)
 
 Vue.prototype.$message = Message
