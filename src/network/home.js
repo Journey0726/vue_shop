@@ -30,3 +30,9 @@ export function addUsers(username,password,email,mobile) {
     }
   });
 }
+export function changeUserInfo(id) {
+  return request({
+    method:'get',
+    url:'/users/'+id
+  });
+}

@@ -32,7 +32,7 @@
           </template>
         </el-table-column>
         <el-table-column label="操作" width="180px">
-          <template>
+          <template v-slot='scope'>
             <el-tooltip
               class="item"
               effect="dark"
@@ -44,6 +44,7 @@
                 type="primary"
                 icon="el-icon-edit"
                 size="mini"
+                @click="editUsers(scope.row.id)"
               ></el-button>
             </el-tooltip>
             <el-tooltip
@@ -106,10 +107,32 @@
     <el-input v-model="addForm.mobile"></el-input>
   </el-form-item>
     </el-form>
-
   <span slot="footer" class="dialog-footer">
     <el-button @click="addDialogVisible=false">取 消</el-button>
     <el-button type="primary" @click="addUser">确 定</el-button>
+  </span>
+</el-dialog>
+<!-- 修改用户信息 -->
+<el-dialog
+  title="修改用户信息"
+  :visible.sync="changeUserVisible"
+  width="50%"
+  >
+
+    <el-form label-width="70px" :model="changeUsersInfo" :rules="changeUsersInfoRules" ref="changeUsersInfoRef">
+  <el-form-item label="用户名">
+    <el-input v-model="changeUsersInfo.username" disabled></el-input>
+  </el-form-item>
+  <el-form-item label="邮箱" prop="email">
+    <el-input v-model="changeUsersInfo.email"></el-input>
+  </el-form-item>
+  <el-form-item label="手机" prop="mobile">
+    <el-input v-model="changeUsersInfo.mobile"></el-input>
+  </el-form-item>
+    </el-form>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="changeUserVisible=false">取 消</el-button>
+    <el-button type="primary" @click="changeUserVisible=false">确 定</el-button>
   </span>
 </el-dialog>
 
@@ -117,7 +140,7 @@
 </template>
 
 <script>
-import { getUsersInfo, userStateChanged ,addUsers} from "@/network/home.js";
+import { getUsersInfo, userStateChanged ,addUsers ,changeUserInfo} from "@/network/home.js";
 export default {
   name: "users",
   data() {
@@ -167,7 +190,23 @@ export default {
           { required: true, message: '请输入手机号', trigger: 'blur'  },
           { validator:checkMobile,trigger:'blur'}
         ]
-      }
+      },
+      changeUsersInfo:{
+         username:'',
+         email:'',
+         mobile:''
+      },
+      changeUsersInfoRules:{
+        email:[
+          { required: true, message: '请输入邮箱', trigger: 'blur'  },
+          { validator:checkEmail,trigger:'blur'}
+        ],
+        mobile:[
+          { required: true, message: '请输入手机号', trigger: 'blur'  },
+          { validator:checkMobile,trigger:'blur'}
+        ]
+      },
+      changeUserVisible:false
     };
   },
   created() {
@@ -184,6 +223,7 @@ export default {
         if (res.meta.status !== 200) return this.$message.error("用户获取失败");
         this.usersList = res.data.users;
         this.total = res.data.total;
+        console.log(this.usersList);
       });
     },
     handleSizeChange(newSize) {
@@ -221,6 +261,18 @@ export default {
           });
           this.addDialogVisible = false
           this.getUsersInfo()
+        })
+      },
+      editUsers(id){
+        this.changeUserVisible = true
+        
+        changeUserInfo(id).then(res =>{
+          console.log(res);
+           if(res.meta.status!==200) return this.$message.error('查询用户失败')
+          this.changeUsersInfo.username = res.data.username
+          this.changeUsersInfo.email = res.data.email
+          this.changeUsersInfo.mobile = res.data.mobile
+          
         })
       }
   },
