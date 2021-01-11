@@ -30,9 +30,25 @@ export function addUsers(username,password,email,mobile) {
     }
   });
 }
-export function changeUserInfo(id) {
+export function queryUserInfo(id) {
   return request({
     method:'get',
+    url:'/users/'+id
+  });
+}
+export function changeUserInfo(id,email,mobile) {
+  return request({
+    method:'put',
+    url:'/users/'+id,
+    data:{
+      email,
+      mobile
+    }
+  });
+}
+export function deleteUserInfo(id) {
+  return request({
+    method:'delete',
     url:'/users/'+id
   });
 }
