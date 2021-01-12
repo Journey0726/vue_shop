@@ -44,3 +44,9 @@ export function deleteRolesInfo(id) {
     url:'/roles/'+id,
   });
 }
+export function deleteRolesRight(roleId,rightId) {
+  return request({
+    method:'delete',
+    url:`roles/${roleId}/rights/${rightId}`
+  });
+}
