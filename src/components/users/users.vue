@@ -172,7 +172,7 @@ import {
   addUsers,
   queryUserInfo,
   changeUserInfo,
-  deleteUserInfo
+  deleteUserInfo,
 } from "@/network/home.js";
 export default {
   name: "users",
@@ -258,11 +258,9 @@ export default {
         this.queryInfo.pagenum,
         this.queryInfo.pagesize
       ).then((res) => {
-        console.log(res);
         if (res.meta.status !== 200) return this.$message.error("用户获取失败");
         this.usersList = res.data.users;
         this.total = res.data.total;
-        console.log(this.usersList);
       });
     },
     handleSizeChange(newSize) {
@@ -275,7 +273,6 @@ export default {
     },
     // 监听switch开关状态的改变
     userStateChanged(userInfo) {
-      console.log(userInfo);
       userStateChanged(`users/${userInfo.id}/state/${userInfo.mg_state}`).then(
         (res) => {
           if (res.meta.status !== 200) {
@@ -311,10 +308,8 @@ export default {
       this.changeUserVisible = true;
 
       queryUserInfo(id).then((res) => {
-        console.log(res);
         if (res.meta.status !== 200) return this.$message.error("查询用户失败");
         this.changeUsersInfo = res.data;
-        console.log( this.changeUsersInfo);
       });
     },
     editDialogClose() {
@@ -332,27 +327,29 @@ export default {
             return this.$message.error("修改用户失败");
           return this.$message.success("修改用户成功！");
         });
-        console.log(this.changeUsersInfo);
+      
         this.changeUserVisible = false;
         this.getUsersInfo();
       });
     },
-    deleteUsers(id){
-      this.$confirm('此操作将永久删除该用户, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(()=>{
-          deleteUserInfo(id).then(res=>{
-            if (res.meta.status !== 200) return this.$message.error("删除用户失败");
-            this.$message.success('您已成功删除该用户')
-            this.getUsersInfo()
-          })
-        }).catch(()=>{
-          this.$message.error('已取消删除')
+    deleteUsers(id) {
+      this.$confirm("此操作将永久删除该用户, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          deleteUserInfo(id).then((res) => {
+            if (res.meta.status !== 200)
+              return this.$message.error("删除用户失败");
+            this.$message.success("您已成功删除该用户");
+            this.getUsersInfo();
+          });
         })
-
-    }
+        .catch(() => {
+          this.$message.error("已取消删除");
+        });
+    },
   },
 };
 </script>
