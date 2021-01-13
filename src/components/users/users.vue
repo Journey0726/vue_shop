@@ -172,7 +172,7 @@ import {
   addUsers,
   queryUserInfo,
   changeUserInfo,
-  deleteUserInfo,
+  deleteUserInfo
 } from "@/network/home.js";
 export default {
   name: "users",

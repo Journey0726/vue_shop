@@ -73,6 +73,7 @@
               >删除</el-button
             >
             <el-button type="warning" icon="el-icon-setting" size="mini"
+            @click="showSetRight(scope.row)"
               >分配权限</el-button
             >
           </template>
@@ -129,6 +130,20 @@
         <el-button type="primary" @click="changeRolesInfo">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 分配权限 -->
+    <el-dialog
+  title="分配权限"
+  :visible.sync="setRightsVisible"
+  width="50%"
+  @close='setRightsClosed'
+  >
+  <el-tree :data="rightsList" :props="treeProps" show-checkbox node-key="id"
+  :default-expand-all='true' :default-checked-keys='defKeys' ref="treeRef"></el-tree>
+  <span slot="footer" class="dialog-footer">
+    <el-button @click="setRightsVisible = false">取 消</el-button>
+    <el-button type="primary" @click="allotRight">确 定</el-button>
+  </span>
+</el-dialog>
   </div>
 </template>
 
@@ -139,7 +154,9 @@ import {
   searchRolesInfo,
   changeRolesInfo,
   deleteRolesInfo,
-  deleteRolesRight
+  deleteRolesRight,
+  getRightsInfo,
+  distributeRights
 } from "@/network/rights.js";
 export default {
   name: "roles",
@@ -148,6 +165,7 @@ export default {
       rolesList: [],
       addRolesVisible: false,
       editRolesVisible: false,
+      setRightsVisible:false,
       addRoles: {
         roleName: "",
         roleDesc: "",
@@ -173,6 +191,16 @@ export default {
         ],
       },
       editRoles: {},
+      //所有权限列表
+      rightsList:[],
+      treeProps:{
+        label:'authName',
+        children:'children'
+      },
+      //默认选中节点ID数组
+      defKeys:[],
+      //当前分配权限角色的ID
+      roleID:''
     };
   },
   created() {
@@ -259,6 +287,47 @@ export default {
       }
         
       ).catch(()=>{this.$message.info('取消删除')})
+    },
+    showSetRight(node){
+      this.roleID = node.id
+      getRightsInfo('/tree').then(res=>{
+        if (res.meta.status !== 200)
+          return this.$message.error("获取权限列表失败");
+        this.rightsList = res.data
+      })
+      this.getLeafKeys(node,this.defKeys)
+      this.setRightsVisible = true
+    },
+    //通过递归获取角色下所有三级权限的id
+    getLeafKeys(node,arr){
+      if(!node.children){
+        return arr.push(node.id)
+      }
+      node.children.forEach(item=>{
+        this.getLeafKeys(item,arr)
+      })
+    },
+    //将defkey赋空
+    setRightsClosed(){
+      this.defKeys = []
+    },
+    //分配权限
+    allotRight(){
+      const keys = [
+        ...this.$refs.treeRef.getCheckedKeys(),
+        ...this.$refs.treeRef.getHalfCheckedKeys(),
+      ];
+       const idString = keys.join(',')
+       console.log(idString);
+       distributeRights(this.roleID,idString).then(res=>{
+         console.log(res);
+          if (res.meta.status !== 200)
+          return this.$message.error("分配权限失败");
+          this.$message.success('分配权限成功') 
+       })
+       this.getRolesInfo()
+       this.setRightsVisible = false
+       
     }
   },
 };

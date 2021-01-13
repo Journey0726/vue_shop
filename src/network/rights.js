@@ -50,3 +50,12 @@ export function deleteRolesRight(roleId,rightId) {
     url:`roles/${roleId}/rights/${rightId}`
   });
 }
+export function distributeRights(roleId,rids) {
+  return request({
+    method:'post',
+    url:`roles/${roleId}/rights`,
+    data:{
+      rids
+    }
+  });
+}
