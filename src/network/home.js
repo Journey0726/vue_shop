@@ -52,3 +52,18 @@ export function deleteUserInfo(id) {
     url:'/users/'+id
   });
 }
+export function getAllRoles() {
+  return request({
+    method:'get',
+    url:'/roles'
+  });
+}
+export function saveRolesInfo(id,rid) {
+  return request({
+    method:'put',
+    url:`/users/${id}/role`,
+    data:{
+      rid
+    }
+  });
+}
