@@ -228,8 +228,8 @@ export default {
             return this.$message.error("添加角色失败");
           return this.$message.success("添加用户成功！");
         });
-        this.addRolesVisible = false;
         this.getRolesInfo();
+        this.addRolesVisible = false;
       });
     },
     searchRolesInfo(id) {
@@ -254,7 +254,8 @@ export default {
             return this.$message.error("修改角色失败");
           return this.$message.success("修改角色成功！");
         });
-        (this.editRolesVisible = false), this.getRolesInfo();
+        this.editRolesVisible = false, 
+        this.getRolesInfo();
       });
     },
     deleteRolesInfo(id) {
@@ -267,8 +268,8 @@ export default {
           if (res.meta.status !== 200)
             return this.$message.error("删除角色失败");
           this.$message.success("您已成功删除该角色");
-          this.getRolesInfo();
         })
+          this.getRolesInfo();
       }).catch(()=>{this.$message.info('取消删除')});
     },
     removeRightById(role,rightId){

@@ -40,11 +40,19 @@
           <el-tag v-else type="warning" size="mini">三级</el-tag>
         </template>
         <!-- 操作 -->
-        <template v-slot:operate>
-          <el-button type="primary" icon="el-icon-edit" size="mini"
+        <template v-slot:operate="scope">
+          <el-button
+            type="primary"
+            icon="el-icon-edit"
+            size="mini"
+            @click="editGoodsCate(scope.row.cat_id)"
             >编辑</el-button
           >
-          <el-button type="danger" icon="el-icon-delete" size="mini"
+          <el-button
+            type="danger"
+            icon="el-icon-delete"
+            size="mini"
+            @click="deleteCate(scope.row.cat_id)"
             >删除</el-button
           >
         </template>
@@ -93,12 +101,41 @@
         <el-button type="primary" @click="addCates">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 编辑商品分类 -->
+    <el-dialog
+      title="编辑分类"
+      :visible.sync="editCateVisible"
+      width="50%"
+      @close="editCateFormClosed"
+    >
+      <el-form
+        :model="editCateForm"
+        :rules="editCateRules"
+        ref="editCateRef"
+        label-width="100px"
+      >
+        <el-form-item label="分类名称:" prop="cat_name">
+          <el-input v-model="editCateForm.cat_name"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editCateVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editCate">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 
 <script>
-import { getHomeCategoryInfo, addCategoryInfo } from "@/network/goods.js";
+import {
+  getHomeCategoryInfo,
+  addCategoryInfo,
+  queryCateById,
+  editCate,
+  deleteCateById,
+} from "@/network/goods.js";
 export default {
   name: "categories",
   data() {
@@ -157,6 +194,19 @@ export default {
         label: "cat_name",
         children: "children",
         checkStrictly: "false",
+      },
+      editCateVisible: false,
+      editCateForm: {},
+      editCateRules: {
+        cat_name: [
+          { required: true, message: "请输入分类名称", trigger: "blur" },
+          {
+            min: 1,
+            max: 16,
+            message: "长度在 1 到 16 个字符",
+            trigger: "blur",
+          },
+        ],
       },
     };
   },
@@ -224,6 +274,50 @@ export default {
       this.$refs.addCateRef.resetFields();
       (this.selectKeys = []), (this.addCateForm.cat_pid = 0);
       this.addCateForm.cat_level = 0;
+    },
+    editGoodsCate(cat_id) {
+      console.log(cat_id);
+      queryCateById(cat_id).then((res) => {
+        if (res.meta.status !== 200)
+          return this.$message.error("获取商品信息失败");
+        this.editCateForm = res.data;
+        console.log(this.editCateForm);
+        this.editCateVisible = true;
+      });
+    },
+    editCateFormClosed() {
+      this.editCateForm = {};
+      this.$refs.editCateRef.resetFields();
+    },
+    editCate() {
+      this.$refs.editCateRef.validate((valid) => {
+        if (!valid) return;
+        editCate(this.editCateForm.cat_id, this.editCateForm.cat_name).then(
+          (res) => {
+            if (res.meta.status !== 200)
+              return this.$message.error("修改商品失败");
+            return this.$message.success("修改商品成功！");
+          }
+        );
+        this.getHomeCategoryInfo();
+        this.editCateVisible = false;
+      });
+    },
+    deleteCate(id) {
+      this.$confirm("此操作将永久删除该类商品, 是否继续?", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(() => {
+          deleteCateById(id).then((res) => {
+            if (res.meta.status !== 200)
+              return this.$message.error("删除商品失败");
+           this.$message.success("您已成功删除该商品");
+          this.getHomeCategoryInfo();
+          });
+        })
+        .catch(() => this.$message.info("取消删除"));
     },
   },
 };
