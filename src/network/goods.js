@@ -67,3 +67,18 @@ export function deleteParamsById(id,attrid) {
     url: `/categories/${id}/attributes/${attrid}`
   });
 }
+export function queryParamsById(id,attrid) {
+  return request({
+    method: 'get',
+    url: `/categories/${id}/attributes/${attrid}`
+  });
+}
+export function editParamsById(id,attrid,attr_name,attr_sel) {
+  return request({
+    method: 'put',
+    url: `/categories/${id}/attributes/${attrid}`,
+    data:{
+      attr_name,attr_sel
+    }
+  });
+}

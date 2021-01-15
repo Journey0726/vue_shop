@@ -44,7 +44,11 @@
             </el-table-column>
             <el-table-column label="操作">
               <template v-slot="scope">
-                <el-button type="primary" icon="el-icon-edit" size="mini"
+                <el-button
+                  type="primary"
+                  icon="el-icon-edit"
+                  size="mini"
+                  @click="showEditParams(scope.row)"
                   >修改</el-button
                 >
                 <el-button
@@ -73,11 +77,19 @@
             <el-table-column prop="attr_name" label="参数名称">
             </el-table-column>
             <el-table-column label="操作">
-              <template v-slot='scope'>
-                <el-button type="primary" icon="el-icon-edit" size="mini"
+              <template v-slot="scope">
+                <el-button
+                  type="primary"
+                  icon="el-icon-edit"
+                  size="mini"
+                  @click="showEditParams(scope.row)"
                   >修改</el-button
                 >
-                <el-button type="danger" icon="el-icon-delete" size="mini" @click="deleteParams(scope.row)"
+                <el-button
+                  type="danger"
+                  icon="el-icon-delete"
+                  size="mini"
+                  @click="deleteParams(scope.row)"
                   >删除</el-button
                 >
               </template>
@@ -130,6 +142,28 @@
         <el-button type="primary" @click="addParams">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 编辑参数 -->
+    <el-dialog
+      :title="'编辑' + titleText"
+      :visible.sync="editParamsVisible"
+      width="50%"
+      @close="editParamsClosed"
+    >
+      <el-form
+        :model="paramsInfoById"
+        :rules="addParamsRules"
+        ref="paramsInfoByIdRef"
+        label-width="100px"
+      >
+        <el-form-item :label="titleText" prop="attr_name">
+          <el-input v-model="paramsInfoById.attr_name"></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="editParamsVisible = false">取 消</el-button>
+        <el-button type="primary" @click="editParams">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -139,6 +173,8 @@ import {
   cateParamsList,
   AddCateParamsList,
   deleteParamsById,
+  queryParamsById,
+  editParamsById,
 } from "@/network/goods.js";
 export default {
   name: "params",
@@ -179,6 +215,9 @@ export default {
       },
       addManyParamsVisible: false,
       addOnlyParamsVisible: false,
+      editParamsVisible: false,
+      editParamsInfo: {},
+      paramsInfoById: {},
     };
   },
   created() {
@@ -251,10 +290,41 @@ export default {
             console.log(res);
             if (res.meta.status !== 200) return this.$message.error("删除失败");
             this.$message.success("您已成功删除该参数");
-          this.cateChange()
+            this.cateChange();
           });
         })
-        .catch(()=>this.$message.info("取消删除"));
+        .catch(() => this.$message.info("取消删除"));
+    },
+    showEditParams(params) {
+      this.editParamsInfo = params;
+      queryParamsById(params.cat_id, params.attr_id).then((res) => {
+        if (res.meta.status !== 200) return this.$message.error("请求参数失败");
+        this.paramsInfoById = res.data;
+      });
+      this.editParamsVisible = true;
+    },
+    editParams() {
+      editParamsById(
+        this.editParamsInfo.cat_id,
+        this.editParamsInfo.attr_id,
+        this.paramsInfoById.attr_name,
+        this.activeName
+      ).then((res) => {
+        console.log(res);
+        if (res.meta.status !== 200) return this.$message.error("修改参数失败");
+        this.$message.success('修改参数成功')
+      });
+      this.cateChange()
+      this.editParamsVisible = false
+    },
+    editParamsClosed() {
+      this.$refs.paramsInfoByIdRef.resetFields();
+    },
+  },
+  computed: {
+    titleText() {
+      if (this.activeName === "many") return "动态参数";
+      else return "静态属性";
     },
   },
 };
