@@ -48,9 +48,5 @@ export default {
 </script>
 
 <style scoped>
-.el-card {
-  position: relative;
-  overflow:auto;
-  height: calc(100vh - 100px);
-}
+
 </style>

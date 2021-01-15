@@ -46,10 +46,24 @@ export function deleteCateById(id) {
 export function cateParamsList(id,sel) {
   return request({
     method: 'get',
-    url: `categories/${id} +/attributes`,
+    url: `categories/${id}/attributes`,
     params:{
       sel
     }
   });
 }
-
+export function AddCateParamsList(id,attr_sel,attr_name) {
+  return request({
+    method: 'post',
+    url: `categories/${id}/attributes`,
+    data:{
+      attr_sel,attr_name
+    }
+  });
+}
+export function deleteParamsById(id,attrid) {
+  return request({
+    method: 'delete',
+    url: `/categories/${id}/attributes/${attrid}`
+  });
+}
