@@ -43,3 +43,13 @@ export function deleteCateById(id) {
     url: '/categories/'+id,
   });
 }
+export function cateParamsList(id,sel) {
+  return request({
+    method: 'get',
+    url: `categories/${id} +/attributes`,
+    params:{
+      sel
+    }
+  });
+}
+
