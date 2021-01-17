@@ -73,12 +73,12 @@ export function queryParamsById(id,attrid) {
     url: `/categories/${id}/attributes/${attrid}`
   });
 }
-export function editParamsById(id,attrid,attr_name,attr_sel) {
+export function editParamsById(id,attrid,attr_name,attr_sel,attr_vals) {
   return request({
     method: 'put',
     url: `/categories/${id}/attributes/${attrid}`,
     data:{
-      attr_name,attr_sel
+      attr_name,attr_sel,attr_vals
     }
   });
 }

@@ -38,7 +38,34 @@
             >添加参数</el-button
           >
           <el-table :data="manyCateInfo" border stripe>
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template v-slot="scope">
+                <el-tag
+                  closable
+                  v-for="(item,index ) in scope.row.attr_vals"
+                  :key="item.attr_id"
+                  @close='tagClosed(scope.row,index)'
+                  >{{ item }}</el-tag
+                >
+                <el-input
+                  class="input-new-tag"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
+                  ref="TagInputRef"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                >
+                </el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput(scope.row)"
+                  >+ New Tag</el-button
+                >
+              </template>
+            </el-table-column>
             <el-table-column type="index"></el-table-column>
             <el-table-column prop="attr_name" label="参数名称">
             </el-table-column>
@@ -72,7 +99,34 @@
             >增加属性</el-button
           >
           <el-table :data="onlyCateInfo" border stripe>
-            <el-table-column type="expand"></el-table-column>
+            <el-table-column type="expand">
+              <template v-slot="scope">
+                <el-tag
+                  closable
+                  v-for="(item,index) in scope.row.attr_vals"
+                  :key="item.attr_id"
+                  @close='tagClosed(scope.row,index)'
+                  >{{ item }}</el-tag
+                >
+                <el-input
+                  class="input-new-tag"
+                  v-if="scope.row.inputVisible"
+                  v-model="scope.row.inputValue"
+                  ref="TagInputRef"
+                  size="small"
+                  @keyup.enter.native="handleInputConfirm(scope.row)"
+                  @blur="handleInputConfirm(scope.row)"
+                >
+                </el-input>
+                <el-button
+                  v-else
+                  class="button-new-tag"
+                  size="small"
+                  @click="showInput(scope.row)"
+                  >+ New Tag</el-button
+                >
+              </template>
+            </el-table-column>
             <el-table-column type="index"></el-table-column>
             <el-table-column prop="attr_name" label="参数名称">
             </el-table-column>
@@ -235,6 +289,8 @@ export default {
       //如果不是3级分类
       if (this.selectKeys.length !== 3) {
         this.selectKeys = [];
+        this.manyCateInfo=[];
+        this.onlyCateInfo=[]
         return;
       }
       cateParamsList(
@@ -243,6 +299,13 @@ export default {
       ).then((res) => {
         if (res.meta.status !== 200)
           return this.$message.error("获取分类参数失败");
+        //将res.data中attr——vals由字符串变成数组
+        res.data.forEach((item) => {
+          item.attr_vals = item.attr_vals ? item.attr_vals.split(" ") : [];
+          //修改对话框的显示与影藏
+          item.inputVisible = false;
+          item.inputValue = "";
+        });
         if (this.activeName === "many") this.manyCateInfo = res.data;
         else this.onlyCateInfo = res.data;
       });
@@ -310,16 +373,59 @@ export default {
         this.paramsInfoById.attr_name,
         this.activeName
       ).then((res) => {
-        console.log(res);
         if (res.meta.status !== 200) return this.$message.error("修改参数失败");
-        this.$message.success('修改参数成功')
+        this.$message.success("修改参数成功");
       });
-      this.cateChange()
-      this.editParamsVisible = false
+      this.cateChange();
+      this.editParamsVisible = false;
     },
     editParamsClosed() {
       this.$refs.paramsInfoByIdRef.resetFields();
     },
+    //切换为input标签
+    //注意：直接传inputVisible的值不行！
+    showInput(row) {
+      row.inputVisible = true;
+      //当页面元素被重新渲染时，调用$nextTick
+      this.$nextTick(() => {
+        this.$refs.TagInputRef.$refs.input.focus();
+      });
+    },
+    //切换为button按钮
+    handleInputConfirm(row) {
+      if (row.inputValue.trim().length === 0) {
+        row.inputValue = "";
+        row.inputVisible = false;
+        return;
+      }
+      row.attr_vals.push(row.inputValue.trim());
+      row.inputValue = "";
+      row.inputVisible = false;
+      console.log(this.editParamsInfo.attr_id,);
+      editParamsById(
+        row.cat_id,
+        row.attr_id,
+        row.attr_name,
+        row.attr_sel,
+        row.attr_vals.join(' ')
+      ).then((res) => {
+        if(res.meta.status !==200) return this.$message.error('添加标签失败')
+        this.$message.success('添加标签成功')
+      });
+    },
+    tagClosed(row,index){
+      row.attr_vals.splice(index,1)
+       editParamsById(
+        row.cat_id,
+        row.attr_id,
+        row.attr_name,
+        row.attr_sel,
+        row.attr_vals.join(' ')
+      ).then((res) => {
+        if(res.meta.status !==200) return this.$message.error('删除标签失败')
+        this.$message.success('删除标签成功')
+      });
+    }
   },
   computed: {
     titleText() {
@@ -334,5 +440,13 @@ export default {
 .cat_opt {
   margin-top: 15px;
   margin-bottom: 15px;
+}
+.el-tag {
+  margin: 5px;
+}
+.input-new-tag {
+  width: 90px;
+  margin-left: 10px;
+  vertical-align: bottom;
 }
 </style>
