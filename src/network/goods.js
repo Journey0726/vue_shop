@@ -82,3 +82,21 @@ export function editParamsById(id,attrid,attr_name,attr_sel,attr_vals) {
     }
   });
 }
+export function getGoodsList(query,pagenum,pagesize) {
+  return request({
+    method: 'get',
+    url: 'goods',
+    params:{
+      query,pagenum,pagesize
+    }
+  });
+}
+export function addGoods(goods_name,goods_cat,goods_price,goods_number,goods_weight,goods_introduce,pics,attrs) {
+  return request({
+    method: 'post',
+    url: 'goods',
+    data:{
+      goods_name,goods_cat,goods_price,goods_number,goods_weight,goods_introduce,pics,attrs
+    }
+  });
+}
