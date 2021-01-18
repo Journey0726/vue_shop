@@ -386,7 +386,7 @@ export default {
           });
         })
         .catch(() => {
-          this.$message.error("已取消删除");
+          this.$message.message.info("已取消删除");
         });
     },
     setRole(userInfo) {

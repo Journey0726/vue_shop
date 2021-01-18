@@ -91,6 +91,18 @@ export function getGoodsList(query,pagenum,pagesize) {
     }
   });
 }
+export function deleteGoodsById(id) {
+  return request({
+    method: 'delete',
+    url: `goods/${id}`
+  });
+}
+export function getGoodsById(id) {
+  return request({
+    method: 'get',
+    url: `goods/${id}`
+  });
+}
 export function addGoods(goods_name,goods_cat,goods_price,goods_number,goods_weight,goods_introduce,pics,attrs) {
   return request({
     method: 'post',
