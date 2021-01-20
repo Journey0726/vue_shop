@@ -9,7 +9,6 @@ export function request(config) {
     instance.interceptors.request.use(config => {
         //拦截后需要将拦截下来的请求数据返回发送
         config.headers.Authorization = window.sessionStorage.getItem('token')
-
         return config;
     }, err => {
         console.log(err);

@@ -195,7 +195,6 @@ export default {
         this.queryInfo.pagenum,
         this.queryInfo.pagesize
       ).then((res) => {
-        console.log(res);
         if (res.meta.status !== 200)
           return this.$message.error("获取商品列表失败");
           
