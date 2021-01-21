@@ -98,6 +98,7 @@
               :on-remove="handleRemove"
               :headers='headers'
               list-type="picture"
+              :on-success='uploadSuccess'
             >
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">
@@ -109,6 +110,13 @@
         </el-tabs>
       </el-form>
     </el-card>
+    <!-- 图片预览 -->
+    <el-dialog
+  title="图片预览"
+  :visible.sync="previewVisible"
+  width="50%">
+  <img :src="previewPath" alt="" class="img">
+</el-dialog>
   </div>
 </template>
 
@@ -125,6 +133,7 @@ export default {
         goods_weight: 0,
         goods_number: 0,
         goods_cat: [],
+        pics:[]
       },
       addFormRules: {
         goods_name: [
@@ -156,7 +165,10 @@ export default {
       //上传图片添加请求头
       headers:{
         Authorization:window.sessionStorage.getItem('token')
-      }
+      },
+      //预览地址
+      previewPath:'',
+      previewVisible:false
     };
   },
   created() {
@@ -207,9 +219,24 @@ export default {
       }
     },
     //预览图片
-      handlePreview(){},
+      handlePreview(file){
+        this.previewPath = file.response.data.url
+        this.previewVisible = true
+      },
       //移除图片
-      handleRemove(){}
+      handleRemove(file){
+        const filePath = file.response.data.tmp_path
+        for(let index in this.addForm.pics){
+          if(this.addForm.pics[index].pic == filePath) 
+          return this.addForm.pics.splice(index,1)
+        }
+        
+      },
+      //添加图片
+      uploadSuccess(response){
+        const pic= {pic : response.data.tmp_path}
+        this.addForm.pics.push(pic)
+      }
   },
 };
 </script>
@@ -223,5 +250,8 @@ export default {
 }
 .el-checkbox {
   margin: 0 10px 0 0 !important;
+}
+.img{
+  width: 100%;
 }
 </style>
