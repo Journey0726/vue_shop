@@ -17,3 +17,6 @@ html,body,#app {
     overflow:auto;
     height: calc(100vh - 100px);
   }
+.ql-editor{
+    min-height: 300px;
+}

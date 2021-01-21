@@ -112,3 +112,12 @@ export function addGoods(goods_name,goods_cat,goods_price,goods_number,goods_wei
     }
   });
 }
+export function editGoods(id,goods_name,goods_price,goods_number,goods_weight,goods_introduce) {
+  return request({
+    method: 'put',
+    url: `goods/${id}`,
+    data:{
+      goods_name,goods_price,goods_number,goods_weight,goods_introduce
+    }
+  });
+}

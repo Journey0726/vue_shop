@@ -96,9 +96,9 @@
               :action="uploadURL"
               :on-preview="handlePreview"
               :on-remove="handleRemove"
-              :headers='headers'
+              :headers="headers"
               list-type="picture"
-              :on-success='uploadSuccess'
+              :on-success="uploadSuccess"
             >
               <el-button size="small" type="primary">点击上传</el-button>
               <div slot="tip" class="el-upload__tip">
@@ -106,22 +106,29 @@
               </div>
             </el-upload>
           </el-tab-pane>
-          <el-tab-pane label="商品内容" name="4">商品内容</el-tab-pane>
+          <el-tab-pane label="商品内容" name="4">
+            <!-- 富文本编辑组件 -->
+            <quill-editor v-model="addForm.goods_introduce"> </quill-editor>
+            <el-button type="primary" class="addBtn" @click="addGood"
+              >添加商品</el-button
+            >
+          </el-tab-pane>
         </el-tabs>
       </el-form>
     </el-card>
     <!-- 图片预览 -->
-    <el-dialog
-  title="图片预览"
-  :visible.sync="previewVisible"
-  width="50%">
-  <img :src="previewPath" alt="" class="img">
-</el-dialog>
+    <el-dialog title="图片预览" :visible.sync="previewVisible" width="50%">
+      <img :src="previewPath" alt="" class="img" />
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import { getHomeCategoryInfo, cateParamsList } from "@/network/goods.js";
+import {
+  getHomeCategoryInfo,
+  cateParamsList,
+  addGoods,
+} from "@/network/goods.js";
 export default {
   name: "addGood",
   data() {
@@ -133,7 +140,9 @@ export default {
         goods_weight: 0,
         goods_number: 0,
         goods_cat: [],
-        pics:[]
+        pics: [],
+        goods_introduce: "",
+        attrs: [],
       },
       addFormRules: {
         goods_name: [
@@ -163,12 +172,12 @@ export default {
       onlyInfo: {},
       uploadURL: "https://www.liulongbin.top:8888/api/private/v1/upload",
       //上传图片添加请求头
-      headers:{
-        Authorization:window.sessionStorage.getItem('token')
+      headers: {
+        Authorization: window.sessionStorage.getItem("token"),
       },
       //预览地址
-      previewPath:'',
-      previewVisible:false
+      previewPath: "",
+      previewVisible: false,
     };
   },
   created() {
@@ -219,24 +228,61 @@ export default {
       }
     },
     //预览图片
-      handlePreview(file){
-        this.previewPath = file.response.data.url
-        this.previewVisible = true
-      },
-      //移除图片
-      handleRemove(file){
-        const filePath = file.response.data.tmp_path
-        for(let index in this.addForm.pics){
-          if(this.addForm.pics[index].pic == filePath) 
-          return this.addForm.pics.splice(index,1)
-        }
-        
-      },
-      //添加图片
-      uploadSuccess(response){
-        const pic= {pic : response.data.tmp_path}
-        this.addForm.pics.push(pic)
+    handlePreview(file) {
+      this.previewPath = file.response.data.url;
+      this.previewVisible = true;
+    },
+    //移除图片
+    handleRemove(file) {
+      const filePath = file.response.data.tmp_path;
+      for (let index in this.addForm.pics) {
+        if (this.addForm.pics[index].pic == filePath)
+          return this.addForm.pics.splice(index, 1);
       }
+    },
+    //添加图片
+    uploadSuccess(response) {
+      const pic = { pic: response.data.tmp_path };
+      this.addForm.pics.push(pic);
+    },
+    addGood() {
+      this.$refs.addFormRef.validate((valid) => {
+        if (!valid) return this.$message.error("请填写必要的表单项");
+      });
+      let addForm2 = JSON.parse(JSON.stringify(this.addForm));
+      addForm2.goods_cat = addForm2.goods_cat.join(",");
+
+      //处理动态和静态参数
+      this.manyInfo.forEach((item) => {
+        const newInfo = {
+          attr_id: item.attr_id,
+          attr_value: item.attr_vals.join(" "),
+        };
+        this.addForm.attrs.push(newInfo);
+      });
+      this.onlyInfo.forEach((item) => {
+        const newInfo = {
+          attr_id: item.attr_id,
+          attr_value: item.attr_vals,
+        };
+        this.addForm.attrs.push(newInfo);
+      });
+      addForm2.attrs = this.addForm.attrs;
+      addGoods(
+        addForm2.goods_name,
+        addForm2.goods_cat,
+        addForm2.goods_price,
+        addForm2.goods_number,
+        addForm2.goods_weight,
+        addForm2.goods_introduce,
+        addForm2.pics,
+        addForm2.attrs
+      ).then(res=>{
+        if(res.meta.status!==201) return this.$message.error('添加商品失败')
+        this.$message.success('添加商品成功')
+      });
+      this.$router.back()
+    },
   },
 };
 </script>
@@ -251,7 +297,10 @@ export default {
 .el-checkbox {
   margin: 0 10px 0 0 !important;
 }
-.img{
+.img {
   width: 100%;
+}
+.addBtn {
+  margin: 15px;
 }
 </style>
