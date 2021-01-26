@@ -224,7 +224,6 @@ export default {
         if (res.meta.status !== 200)
           return this.$$message.error("获取商品信息失败");
         this.editForm = res.data;
-        console.log(this.editForm);
       });
       this.editDialogVisible = true;
     },
@@ -237,7 +236,6 @@ export default {
         this.editForm.goods_weight,
         this.editForm.goods_introduce
       ).then((res) => {
-        console.log(res);
         if(res.meta.status !==200) return this.$message.error('编辑商品失败')
         this.$message.success('编辑商品成功')
       })

@@ -276,12 +276,10 @@ export default {
       this.addCateForm.cat_level = 0;
     },
     editGoodsCate(cat_id) {
-      console.log(cat_id);
       queryCateById(cat_id).then((res) => {
         if (res.meta.status !== 200)
           return this.$message.error("获取商品信息失败");
         this.editCateForm = res.data;
-        console.log(this.editCateForm);
         this.editCateVisible = true;
       });
     },

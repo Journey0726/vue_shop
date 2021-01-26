@@ -319,9 +319,7 @@ export default {
         ...this.$refs.treeRef.getHalfCheckedKeys(),
       ];
        const idString = keys.join(',')
-       console.log(idString);
        distributeRights(this.roleID,idString).then(res=>{
-         console.log(res);
           if (res.meta.status !== 200)
           return this.$message.error("分配权限失败");
           this.$message.success('分配权限成功') 

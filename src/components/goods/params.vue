@@ -350,7 +350,6 @@ export default {
       })
         .then(() => {
           deleteParamsById(id, attrid).then((res) => {
-            console.log(res);
             if (res.meta.status !== 200) return this.$message.error("删除失败");
             this.$message.success("您已成功删除该参数");
             this.cateChange();
@@ -401,7 +400,6 @@ export default {
       row.attr_vals.push(row.inputValue.trim());
       row.inputValue = "";
       row.inputVisible = false;
-      console.log(this.editParamsInfo.attr_id,);
       editParamsById(
         row.cat_id,
         row.attr_id,

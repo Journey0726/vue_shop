@@ -167,7 +167,6 @@ export default {
         this.queryInfo.pagenum,
         this.queryInfo.pagesize
       ).then((res) => {
-        console.log(res);
         if (res.meta.status !== 200)
           return this.$message.error("获取订单列表失败");
         this.orderList = res.data.goods;
@@ -193,7 +192,6 @@ export default {
         if (res.meta.status !== 200)
           return this.$message.error("获取物流信息失败");
         this.localList = res.data;
-        console.log(res);
       });
       this.localPlaceVisible = true;
     },

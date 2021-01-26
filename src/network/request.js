@@ -15,8 +15,6 @@ export function request(config) {
         //在请求拦截器中展示进度条
         NProgress.start();
         return config;
-    }, err => {
-        console.log(err);
     })
 
     // 响应拦截器
@@ -25,8 +23,6 @@ export function request(config) {
         //在响应拦截器中关闭进度条
         NProgress.done()
         return res.data
-    }, err => {
-        console.log(err)
     })
 
     return instance(config)

@@ -37,7 +37,6 @@ export default {
   methods: {
     getRightsInfo() {
       getRightsInfo("/list").then((res) => {
-        console.log(res);
         if (res.meta.status !== 200)
           return this.$message.error("获取权限列表失败");
         this.rightsList = res.data;
