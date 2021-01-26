@@ -9,3 +9,9 @@ export function getOrdersInfo(query, pagenum, pagesize, user_id, pay_status, is_
         }
     });
 }
+export function getLocalInfo(id) {
+    return request({
+        method: 'get',
+        url: `/kuaidi/${id}`,
+    });
+}
