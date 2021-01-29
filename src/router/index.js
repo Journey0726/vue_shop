@@ -1,17 +1,17 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import LogIn from '../components/login.vue'
-import Home from '@/components/home.vue'
-import Welcome from '@/components/welcome.vue'
-import Users from '@/components/users/users.vue'
-import Right from '@/components/powers/rights.vue'
-import Roles from '@/components/powers/roles.vue'
-import Categories from '@/components/goods/categories.vue'
-import Params from '@/components/goods/params.vue'
-import GoodsList from '@/components/goods/goodsList'
-import AddGood from '@/components/goods/addGood.vue'
-import Order from '@/components/order/order.vue'
-import Report from '@/components/reports/report.vue'
+const LogIn = ()=>import('../components/login.vue')
+const Home = ()=>import( '@/components/home.vue')
+const Welcome = ()=>import( '@/components/welcome.vue')
+const Users = ()=>import( '@/components/users/users.vue')
+const Right = ()=>import( '@/components/powers/rights.vue')
+const Roles = ()=>import( '@/components/powers/roles.vue')
+const Categories = ()=>import( '@/components/goods/categories.vue')
+const Params = ()=>import( '@/components/goods/params.vue')
+const GoodsList = ()=>import( '@/components/goods/goodsList')
+const AddGood = ()=>import( '@/components/goods/addGood.vue')
+const Order = ()=>import( '@/components/order/order.vue')
+const Report = ()=>import( '@/components/reports/report.vue')
 Vue.use(VueRouter)
 
 const routes = [
